@@ -46,7 +46,7 @@
             }
             else
             {
-                MainForm.Instance.Manager.ModifyMember(this.tbPartyId.Text.ToInt32(), this.tbPartyName.Text);
+                MainForm.Instance.Manager.ModifyMember(id, this.tbPartyId.Text.ToInt32(), this.tbPartyName.Text);
                 base.Close();
             }
         }

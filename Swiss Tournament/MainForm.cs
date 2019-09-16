@@ -513,6 +513,7 @@
                 new ModifyMember(this.lvParty.SelectedItems[0].SubItems[0].Text, this.lvParty.SelectedItems[0].SubItems[1].Text.ToInt32()).ShowDialog();
                 this.refresh_party();
                 this.refresh_round();
+                Observer.Instance.Refresh();
             }
         }
 
@@ -550,6 +551,7 @@
                 }
                 this.refresh_party();
                 this.refresh_round();
+                Observer.Instance.Refresh();
             }
         }
     }

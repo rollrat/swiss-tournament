@@ -36,10 +36,15 @@
             this.db.EvalNqSql(sql);
         }
 
-        public void ModifyMember(int id, string name)
+        public void ModifyMember(int id_src, int id_dest, string name)
         {
-            string sql = $"update members set name='{name}', id={id} where id={id}";
+            string sql = $"update members set name='{name}', id={id_dest} where id={id_src}";
             this.db.EvalNqSql(sql);
+
+            string sql2 = $"update history set p1={id_dest} where p1={id_src}";
+            this.db.EvalNqSql(sql2);
+            string sql3 = $"update history set p2={id_dest} where p2={id_src}";
+            this.db.EvalNqSql(sql3);
         }
 
         public List<History> QueryHistory(string where = "")
