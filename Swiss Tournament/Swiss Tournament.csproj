@@ -64,6 +64,8 @@
     <Compile Include="DB\SqliteWrapper.cs" />
     <Compile Include="DB\Status.cs" />
     <Compile Include="Extends.cs" />
+    <Compile Include="Language\en-US.Designer.cs" />
+    <Compile Include="Language\ko-KR.Designer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +90,8 @@
     <Compile Include="TieTable.cs">
       <SubType>Form</SubType>
     </Compile>
+    <EmbeddedResource Include="Language\en-US.resx" />
+    <EmbeddedResource Include="Language\ko-KR.resx" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
