@@ -3,7 +3,7 @@
 ## Summary
 
 This project is tournament simulation program under swiss-system tournament.
-You can find detail information in [this site](https://en.wikipedia.org/wiki/Swiss-system_tournament).
+You can find more detail information in [this site](https://en.wikipedia.org/wiki/Swiss-system_tournament).
 
 ## Contact Us
 
