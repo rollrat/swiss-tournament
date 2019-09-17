@@ -2,7 +2,8 @@
 
 ## Summary
 
-This project is tournament simulation program using swiss tournament system.
+This project is tournament simulation program under swiss-system tournament.
+You can find detail information in [this site](https://en.wikipedia.org/wiki/Swiss-system_tournament).
 
 ## Contact Us
 
@@ -33,4 +34,5 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.```
+THE SOFTWARE.
+```
