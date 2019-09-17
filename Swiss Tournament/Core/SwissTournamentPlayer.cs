@@ -1,8 +1,19 @@
-﻿namespace Swiss_Tournament.Core
-{
-    using System;
-    using System.Collections.Generic;
+﻿/*
 
+   Copyright (C) 2019. rollrat All Rights Reserved.
+
+   Author: Jeong HyunJun
+
+*/
+
+using System;
+using System.Collections.Generic;
+
+namespace Swiss_Tournament.Core
+{
+    /// <summary>
+    /// Participant Informations
+    /// </summary>
     public class SwissTournamentPlayer
     {
         public int Id;
@@ -12,13 +23,12 @@
         public List<SwissTournamentGame> Games;
 
         public SwissTournamentPlayer(int id)
-        {
-            this.Id = id;
-            this.Games = new List<SwissTournamentGame>();
-        }
+        { Id = id; Games = new List<SwissTournamentGame>(); }
 
-        public int Score =>
-            (this.Win - this.Draw);
+        /// <summary>
+        /// Get swiss-system tournament player score
+        /// </summary>
+        public int Score => Win - Draw;
     }
 }
 

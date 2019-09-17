@@ -1,11 +1,18 @@
-﻿namespace Swiss_Tournament.Core
-{
-    using Swiss_Tournament.DB;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
+﻿/*
 
+   Copyright (C) 2019. rollrat All Rights Reserved.
+
+   Author: Jeong HyunJun
+
+*/
+
+using Swiss_Tournament.DB;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Swiss_Tournament.Core
+{
     public class SwissTournamentRound
     {
         public Dictionary<int, SwissTournamentPlayer> players = new Dictionary<int, SwissTournamentPlayer>();
@@ -15,30 +22,33 @@
         public const int bye_lose = -2;
         private int rank_count = 0;
 
-        private int get_t0_score(int p) => 
-            (this.players[p].Win - this.players[p].Lose);
+        private int get_t0_score(int p) =>
+            (players[p].Win - players[p].Lose);
 
-        private int get_t1_score(int p) => 
-            this.players[p].Games.Sum<SwissTournamentGame>(delegate (SwissTournamentGame r) {
-                int num = r.OpponentPlayer(this.players[p].Id);
-                return ((num != -1) ? ((num != -2) ? this.players[num].Score : -1) : 0);
+        private int get_t1_score(int p) =>
+            players[p].Games.Sum(delegate (SwissTournamentGame r)
+            {
+                int num = r.OpponentPlayer(players[p].Id);
+                return ((num != -1) ? ((num != -2) ? players[num].Score : -1) : 0);
             });
 
-        private int get_t2_score(int p) => 
-            this.players[p].Games.Sum<SwissTournamentGame>(delegate (SwissTournamentGame r) {
-                int opp1 = r.OpponentPlayer(this.players[p].Id);
-                return ((opp1 != -1) ? ((opp1 != -2) ? this.players[opp1].Games.Sum<SwissTournamentGame>(delegate (SwissTournamentGame rr) {
+        private int get_t2_score(int p) =>
+            players[p].Games.Sum(delegate (SwissTournamentGame r)
+            {
+                int opp1 = r.OpponentPlayer(players[p].Id);
+                return ((opp1 != -1) ? ((opp1 != -2) ? players[opp1].Games.Sum(delegate (SwissTournamentGame rr)
+                {
                     int num = rr.OpponentPlayer(opp1);
-                    return ((num != -1) ? ((num != -2) ? this.players[num].Score : -1) : 0);
+                    return ((num != -1) ? ((num != -2) ? players[num].Score : -1) : 0);
                 }) : -1) : 0);
             });
 
         private int get_t3_score(int p)
         {
             int num = 0;
-            foreach (SwissTournamentGame game in this.players[p].Games)
+            foreach (SwissTournamentGame game in players[p].Games)
             {
-                if (game.PlayerScore(this.players[p].Id) == -1)
+                if (game.PlayerScore(players[p].Id) == -1)
                 {
                     num += game.Round * game.Round;
                 }
@@ -49,30 +59,31 @@
         public Dictionary<int, Tuple<int, int, int, int>> GetTScore()
         {
             Dictionary<int, Tuple<int, int, int, int>> dictionary = new Dictionary<int, Tuple<int, int, int, int>>();
-            foreach (KeyValuePair<int, SwissTournamentPlayer> pair in this.players)
+            foreach (KeyValuePair<int, SwissTournamentPlayer> pair in players)
             {
-                dictionary.Add(pair.Key, new Tuple<int, int, int, int>(this.get_t0_score(pair.Key), this.get_t1_score(pair.Key), this.get_t2_score(pair.Key), this.get_t3_score(pair.Key)));
+                dictionary.Add(pair.Key, new Tuple<int, int, int, int>(get_t0_score(pair.Key), get_t1_score(pair.Key), get_t2_score(pair.Key), get_t3_score(pair.Key)));
             }
             return dictionary;
         }
 
         private void insert_log(int pp, int what)
         {
-            if (!this.log.ContainsKey(pp))
+            if (!log.ContainsKey(pp))
             {
-                this.log.Add(pp, new List<int>());
+                log.Add(pp, new List<int>());
             }
-            this.log[pp].Add(what);
+            log[pp].Add(what);
         }
 
         public void InsertPlayer(int id)
         {
-            this.players.Add(id, new SwissTournamentPlayer(id));
+            players.Add(id, new SwissTournamentPlayer(id));
         }
 
         public void InsertRoundResult(int p1, int p2, Status status, int round)
         {
-            SwissTournamentGame item = new SwissTournamentGame {
+            SwissTournamentGame item = new SwissTournamentGame
+            {
                 Player1 = p1,
                 Player2 = p2,
                 Status = status,
@@ -80,12 +91,12 @@
             };
             if (status == Status.Draw)
             {
-                SwissTournamentPlayer local1 = this.players[p1];
+                SwissTournamentPlayer local1 = players[p1];
                 local1.Draw++;
-                this.players[p1].Games.Add(item);
-                SwissTournamentPlayer local2 = this.players[p2];
+                players[p1].Games.Add(item);
+                SwissTournamentPlayer local2 = players[p2];
                 local2.Draw++;
-                this.players[p2].Games.Add(item);
+                players[p2].Games.Add(item);
             }
             else if ((status == Status.Player1Win) || (status == Status.Player2Win))
             {
@@ -95,63 +106,63 @@
                     p2 = p1;
                     p1 = num;
                 }
-                SwissTournamentPlayer local3 = this.players[p1];
+                SwissTournamentPlayer local3 = players[p1];
                 local3.Win++;
-                this.players[p1].Games.Add(item);
-                SwissTournamentPlayer local4 = this.players[p2];
+                players[p1].Games.Add(item);
+                SwissTournamentPlayer local4 = players[p2];
                 local4.Lose++;
-                this.players[p2].Games.Add(item);
+                players[p2].Games.Add(item);
             }
             else if (status == Status.ByeWin)
             {
                 item.Player2 = -1;
                 item.Status = Status.Player1Win;
-                SwissTournamentPlayer local5 = this.players[p1];
+                SwissTournamentPlayer local5 = players[p1];
                 local5.Win++;
-                this.players[p1].Games.Add(item);
+                players[p1].Games.Add(item);
             }
             else if (status == Status.ByeLose)
             {
                 item.Player2 = -2;
                 item.Status = Status.Player2Win;
-                SwissTournamentPlayer local6 = this.players[p1];
+                SwissTournamentPlayer local6 = players[p1];
                 local6.Lose++;
-                this.players[p1].Games.Add(item);
+                players[p1].Games.Add(item);
             }
         }
 
         public void Sort()
         {
             Dictionary<int, int> source = new Dictionary<int, int>();
-            this.rank_count = 0;
+            rank_count = 0;
             Dictionary<int, List<int>> dictionary2 = new Dictionary<int, List<int>>();
-            foreach (KeyValuePair<int, SwissTournamentPlayer> pair in this.players)
+            foreach (KeyValuePair<int, SwissTournamentPlayer> pair in players)
             {
-                if (!dictionary2.ContainsKey(this.get_t0_score(pair.Key)))
+                if (!dictionary2.ContainsKey(get_t0_score(pair.Key)))
                 {
-                    dictionary2.Add(this.get_t0_score(pair.Key), new List<int>());
+                    dictionary2.Add(get_t0_score(pair.Key), new List<int>());
                 }
-                dictionary2[this.get_t0_score(pair.Key)].Add(pair.Key);
+                dictionary2[get_t0_score(pair.Key)].Add(pair.Key);
             }
             List<KeyValuePair<int, List<int>>> list = dictionary2.ToList<KeyValuePair<int, List<int>>>();
             list.Sort((x, y) => y.Key.CompareTo(x.Key));
             list.ForEach(ps =>
             {
-                ps.Value.ForEach(x => this.insert_log(x, ps.Key));
+                ps.Value.ForEach(x => insert_log(x, ps.Key));
                 if (ps.Value.Count == 1)
                 {
-                    int num = this.rank_count;
-                    this.rank_count = num + 1;
+                    int num = rank_count;
+                    rank_count = num + 1;
                     source.Add(ps.Value[0], num);
                     return;
                 }
-                foreach (KeyValuePair<int, int> pair2 in this.SortT1(ps.Value))
+                foreach (KeyValuePair<int, int> pair2 in SortT1(ps.Value))
                 {
                     source.Add(pair2.Key, pair2.Value);
                 }
             });
-            this.rank = source.ToList<KeyValuePair<int, int>>();
-            this.rank.Sort((x, y) => x.Value.CompareTo(y.Value));
+            rank = source.ToList<KeyValuePair<int, int>>();
+            rank.Sort((x, y) => x.Value.CompareTo(y.Value));
         }
 
         private Dictionary<int, int> SortT1(List<int> ll)
@@ -160,27 +171,28 @@
             Dictionary<int, List<int>> source = new Dictionary<int, List<int>>();
             foreach (int num in ll)
             {
-                if (!source.ContainsKey(this.get_t1_score(num)))
+                if (!source.ContainsKey(get_t1_score(num)))
                 {
-                    source.Add(this.get_t1_score(num), new List<int>());
+                    source.Add(get_t1_score(num), new List<int>());
                 }
-                source[this.get_t1_score(num)].Add(num);
+                source[get_t1_score(num)].Add(num);
             }
             List<KeyValuePair<int, List<int>>> list = source.ToList<KeyValuePair<int, List<int>>>();
             list.Sort((x, y) => y.Key.CompareTo(x.Key));
             list.ForEach(ps =>
             {
-                ps.Value.ForEach(delegate (int x) {
-                    this.insert_log(x, ps.Key);
+                ps.Value.ForEach(delegate (int x)
+                {
+                    insert_log(x, ps.Key);
                 });
                 if (ps.Value.Count == 1)
                 {
-                    int num2 = this.rank_count;
-                    this.rank_count = num2 + 1;
+                    int num2 = rank_count;
+                    rank_count = num2 + 1;
                     dictionary.Add(ps.Value[0], num2);
                     return;
                 }
-                foreach (KeyValuePair<int, int> pair in this.SortT2(ps.Value))
+                foreach (KeyValuePair<int, int> pair in SortT2(ps.Value))
                 {
                     dictionary.Add(pair.Key, pair.Value);
                 }
@@ -194,27 +206,28 @@
             Dictionary<int, List<int>> source = new Dictionary<int, List<int>>();
             foreach (int num in ll)
             {
-                if (!source.ContainsKey(this.get_t2_score(num)))
+                if (!source.ContainsKey(get_t2_score(num)))
                 {
-                    source.Add(this.get_t2_score(num), new List<int>());
+                    source.Add(get_t2_score(num), new List<int>());
                 }
-                source[this.get_t2_score(num)].Add(num);
+                source[get_t2_score(num)].Add(num);
             }
             List<KeyValuePair<int, List<int>>> list = source.ToList<KeyValuePair<int, List<int>>>();
             list.Sort((x, y) => y.Key.CompareTo(x.Key));
             list.ForEach(ps =>
             {
-                ps.Value.ForEach(delegate (int x) {
-                    this.insert_log(x, ps.Key);
+                ps.Value.ForEach(delegate (int x)
+                {
+                    insert_log(x, ps.Key);
                 });
                 if (ps.Value.Count == 1)
                 {
-                    int num2 = this.rank_count;
-                    this.rank_count = num2 + 1;
+                    int num2 = rank_count;
+                    rank_count = num2 + 1;
                     dictionary.Add(ps.Value[0], num2);
                     return;
                 }
-                foreach (KeyValuePair<int, int> pair in this.SortT3(ps.Value))
+                foreach (KeyValuePair<int, int> pair in SortT3(ps.Value))
                 {
                     dictionary.Add(pair.Key, pair.Value);
                 }
@@ -228,23 +241,24 @@
             Dictionary<int, List<int>> source = new Dictionary<int, List<int>>();
             foreach (int num in ll)
             {
-                if (!source.ContainsKey(this.get_t3_score(num)))
+                if (!source.ContainsKey(get_t3_score(num)))
                 {
-                    source.Add(this.get_t3_score(num), new List<int>());
+                    source.Add(get_t3_score(num), new List<int>());
                 }
-                source[this.get_t3_score(num)].Add(num);
+                source[get_t3_score(num)].Add(num);
             }
             List<KeyValuePair<int, List<int>>> list = source.ToList<KeyValuePair<int, List<int>>>();
             list.Sort((x, y) => y.Key.CompareTo(x.Key));
             list.ForEach(ps =>
             {
-                ps.Value.ForEach(delegate (int x) {
-                    this.insert_log(x, ps.Key);
+                ps.Value.ForEach(delegate (int x)
+                {
+                    insert_log(x, ps.Key);
                 });
                 foreach (int num2 in ps.Value)
                 {
-                    int num3 = this.rank_count;
-                    this.rank_count = num3 + 1;
+                    int num3 = rank_count;
+                    rank_count = num3 + 1;
                     dictionary.Add(num2, num3);
                 }
             });
