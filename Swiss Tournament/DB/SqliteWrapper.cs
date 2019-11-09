@@ -33,7 +33,10 @@
             using (SQLiteConnection connection = new SQLiteConnection(this.conn))
             {
                 connection.Open();
-                return Convert.ToInt32(new SQLiteCommand(sql, connection).ExecuteScalar());
+                var x = new SQLiteCommand(sql, connection).ExecuteScalar();
+                if (x == DBNull.Value)
+                    return 0;
+                return Convert.ToInt32(x);
             }
         }
 
