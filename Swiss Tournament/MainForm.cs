@@ -180,15 +180,15 @@ namespace Swiss_Tournament
 
                 // 이전 라운드 결과로부터 새로운 라운드 생성
                 var tie_info = GetTieTableInfo(max_round);
+                for (int i = 0; i < tie_info.Count / 2; i++)
+                {
+                    Manager.InsertHistory(tie_info[i].Id, tie_info[tie_info.Count - i - 1].Id, Status.None, target_round, "");
+                }
                 // 부전승 시킬놈 선정
                 if (tie_info.Count % 2 == 1)
                 {
                     var bjs = tie_info[tie_info.Count / 2];
                     Manager.InsertHistory(bjs.Id, -1, Status.ByeWin, target_round, "");
-                }
-                for (int i = 0; i < tie_info.Count / 2; i++)
-                {
-                    Manager.InsertHistory(tie_info[i].Id, tie_info[tie_info.Count - i - 1].Id, Status.None, target_round, "");
                 }
 
                 RoundControl control = new RoundControl(target_round)
