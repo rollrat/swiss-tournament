@@ -28,13 +28,18 @@
             SQLiteConnection.CreateFile($"{filename}");
         }
 
-        public int EvalCount(string table, string attr = "ix")
+        public int EvalScalar(string sql)
         {
             using (SQLiteConnection connection = new SQLiteConnection(this.conn))
             {
                 connection.Open();
-                return Convert.ToInt32(new SQLiteCommand($"select count({attr}) from {table}", connection).ExecuteScalar());
+                return Convert.ToInt32(new SQLiteCommand(sql, connection).ExecuteScalar());
             }
+        }
+
+        public int EvalCount(string table, string attr = "ix")
+        {
+            return EvalScalar($"select count({attr}) from {table}");
         }
 
         public void EvalNqSql(string sql)

@@ -17,6 +17,12 @@ namespace Swiss_Tournament
 {
     public partial class MainForm : Form
     {
+        public static MainForm Instance;
+        public string DBFileName;
+        public SqliteWrapper DB;
+        public DBManager Manager;
+        public Dictionary<int, RoundControl> rounds = new Dictionary<int, RoundControl>();
+
         public MainForm()
         {
             InitializeComponent();
@@ -71,6 +77,17 @@ namespace Swiss_Tournament
                 lCreatedDateTime.Text = tuple.Item1.ToString();
                 lCreatedMessage.Text = tuple.Item2;
                 refresh_party();
+
+                //
+                // Load round more than two
+                //
+                var max_round = Manager.GetMaxRound();
+                for (int i = 2; i <= max_round; i++)
+                {
+                    RoundControl control = new RoundControl(i) { Dock = DockStyle.Fill };
+                    tabPage4.Controls.Add(control);
+                    rounds.Add(i, control);
+                }
             }
         }
 
@@ -151,21 +168,29 @@ namespace Swiss_Tournament
 
         private void BNewRound_Click(object sender, EventArgs e)
         {
-            var nt = new TabPage();
-            nt.Location = new Point(4, 24);
-            nt.Padding = new Padding(3);
-            nt.Size = new Size(988, 369);
-            nt.TabIndex = 0;
-            nt.Text = "라운드 " + tabControl2.TabPages.Count;
-            nt.UseVisualStyleBackColor = true;
-            tabControl2.TabPages.Add(nt);
-
-            RoundControl control = new RoundControl(1)
+            if (MessageBox.Show("새로운 라운드를 생성하면 이전 라운드를 기반으로 새로운 라운드를 생성하지만, 더이상 이전 라운드의 데이터가 새로운 라운드에 영향을 미치지 않습니다. 계속할까요?", "Swiss Tournament System", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                Dock = DockStyle.Fill
-            };
-            nt.Controls.Add(control);
-            rounds.Add(tabControl2.TabPages.Count - 1, control);
+                var max_round = Manager.GetMaxRound();
+
+                var nt = new TabPage();
+                nt.Location = new Point(4, 24);
+                nt.Padding = new Padding(3);
+                nt.Size = new Size(988, 369);
+                nt.TabIndex = 0;
+                nt.Text = "라운드 " + tabControl2.TabPages.Count;
+                nt.UseVisualStyleBackColor = true;
+                tabControl2.TabPages.Add(nt);
+
+                // 이전 라운드 결과로부터 새로운 라운드 생성
+
+
+                RoundControl control = new RoundControl(max_round)
+                {
+                    Dock = DockStyle.Fill
+                };
+                nt.Controls.Add(control);
+                rounds.Add(tabControl2.TabPages.Count - 1, control);
+            }
         }
     }
 }

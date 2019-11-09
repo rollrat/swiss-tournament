@@ -549,11 +549,6 @@ namespace Swiss_Tournament
 
         }
 
-        public static MainForm Instance;
-        public string DBFileName;
-        public SqliteWrapper DB;
-        public DBManager Manager;
-        public Dictionary<int, RoundControl> rounds = new Dictionary<int, RoundControl>();
         private StatusStrip statusStrip1;
         private TabControl tabControl1;
         private TabPage tabPage1;

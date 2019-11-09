@@ -92,6 +92,12 @@
             return result;
         }
 
+        public int GetMaxRound()
+        {
+            string sql = "select max(round) from history";
+            return this.db.EvalScalar(sql);
+        }
+
         public List<History> QueryRound(int round) => 
             this.QueryHistory($"round={round}");
 
