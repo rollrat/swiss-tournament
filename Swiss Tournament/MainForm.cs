@@ -78,6 +78,7 @@ namespace Swiss_Tournament
                 lCreatedDateTime.Text = tuple.Item1.ToString();
                 lCreatedMessage.Text = tuple.Item2;
                 refresh_party();
+                refresh_rounds_info();
 
                 //
                 // Load round more than two
@@ -109,6 +110,36 @@ namespace Swiss_Tournament
         private void refresh_round()
         {
             rounds.ToList().ForEach(x => x.Value.Refresh());
+        }
+
+        private void refresh_rounds_info()
+        {
+            var max_round = Manager.GetMaxRound();
+            var histories = Manager.QueryHistory();
+
+            var complete_game = new int[max_round + 1];
+            var remain_game = new int[max_round + 1];
+            var error_game = new int[max_round + 1];
+
+            histories.ForEach(h =>
+            {
+                if (h.Status == Status.None)
+                    remain_game[h.Round] += 1;
+                else if (h.Status == Status.Invalid)
+                    error_game[h.Round] += 1;
+                else
+                    complete_game[h.Round] += 1;
+            });
+
+            List<ListViewItem> lists = new List<ListViewItem>();
+            for (int i = 1; i <= max_round; i++)
+            {
+                string[] items = new string[] { i.ToString(), complete_game[i].ToString() + " 게임", 
+                    remain_game[i].ToString() + " 게임", error_game[i].ToString() + " 게임" };
+                lists.Add(new ListViewItem(items));
+            }
+            lvRounds.Items.Clear();
+            lvRounds.Items.AddRange(lists.ToArray());
         }
 
         private void tbPartyId_KeyDown(object sender, KeyEventArgs e)
@@ -197,6 +228,7 @@ namespace Swiss_Tournament
                 };
                 nt.Controls.Add(control);
                 rounds.Add(tabControl2.TabPages.Count - 1, control);
+                refresh_rounds_info();
             }
         }
 
