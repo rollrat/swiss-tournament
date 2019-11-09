@@ -85,14 +85,7 @@ namespace Swiss_Tournament
                 var max_round = Manager.GetMaxRound();
                 for (int i = 2; i <= max_round; i++)
                 {
-                    var nt = new TabPage();
-                    nt.Location = new Point(4, 24);
-                    nt.Padding = new Padding(3);
-                    nt.Size = new Size(988, 369);
-                    nt.TabIndex = 0;
-                    nt.Text = "라운드 " + tabControl2.TabPages.Count;
-                    nt.UseVisualStyleBackColor = true;
-                    tabControl2.TabPages.Add(nt);
+                    var nt = CreateTabPage();
 
                     var control = new RoundControl(i) { Dock = DockStyle.Fill };
                     nt.Controls.Add(control);
@@ -183,14 +176,7 @@ namespace Swiss_Tournament
                 var max_round = Manager.GetMaxRound();
                 var target_round = max_round + 1;
 
-                var nt = new TabPage();
-                nt.Location = new Point(4, 24);
-                nt.Padding = new Padding(3);
-                nt.Size = new Size(988, 369);
-                nt.TabIndex = 0;
-                nt.Text = "라운드 " + tabControl2.TabPages.Count;
-                nt.UseVisualStyleBackColor = true;
-                tabControl2.TabPages.Add(nt);
+                var nt = CreateTabPage();
 
                 // 이전 라운드 결과로부터 새로운 라운드 생성
                 var tie_info = GetTieTableInfo(max_round);
@@ -212,6 +198,19 @@ namespace Swiss_Tournament
                 nt.Controls.Add(control);
                 rounds.Add(tabControl2.TabPages.Count - 1, control);
             }
+        }
+
+        private TabPage CreateTabPage()
+        {
+            var nt = new TabPage();
+            nt.Location = new Point(4, 24);
+            nt.Padding = new Padding(3);
+            nt.Size = new Size(988, 369);
+            nt.TabIndex = 0;
+            nt.Text = "라운드 " + tabControl2.TabPages.Count;
+            nt.UseVisualStyleBackColor = true;
+            tabControl2.TabPages.Add(nt);
+            return nt;
         }
 
         private List<Member> GetTieTableInfo(int round)
