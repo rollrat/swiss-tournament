@@ -1,4 +1,12 @@
-﻿namespace Swiss_Tournament
+﻿/*
+
+   Copyright (C) 2019. rollrat All Rights Reserved.
+
+   Author: Jeong HyunJun
+
+*/
+
+namespace Swiss_Tournament
 {
     using Swiss_Tournament.Core;
     using Swiss_Tournament.DB;
@@ -9,7 +17,7 @@
     using System.Linq;
     using System.Windows.Forms;
 
-    public class TieTable : Form
+    public partial class TieTable : Form
     {
         private int round;
         private IContainer components = null;

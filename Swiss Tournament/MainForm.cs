@@ -6,6 +6,7 @@
 
 */
 
+using Swiss_Tournament.Core;
 using Swiss_Tournament.DB;
 using System;
 using System.Collections.Generic;
@@ -84,8 +85,17 @@ namespace Swiss_Tournament
                 var max_round = Manager.GetMaxRound();
                 for (int i = 2; i <= max_round; i++)
                 {
-                    RoundControl control = new RoundControl(i) { Dock = DockStyle.Fill };
-                    tabPage4.Controls.Add(control);
+                    var nt = new TabPage();
+                    nt.Location = new Point(4, 24);
+                    nt.Padding = new Padding(3);
+                    nt.Size = new Size(988, 369);
+                    nt.TabIndex = 0;
+                    nt.Text = "라운드 " + tabControl2.TabPages.Count;
+                    nt.UseVisualStyleBackColor = true;
+                    tabControl2.TabPages.Add(nt);
+
+                    var control = new RoundControl(i) { Dock = DockStyle.Fill };
+                    nt.Controls.Add(control);
                     rounds.Add(i, control);
                 }
             }
@@ -171,6 +181,7 @@ namespace Swiss_Tournament
             if (MessageBox.Show("새로운 라운드를 생성하면 이전 라운드를 기반으로 새로운 라운드를 생성하지만, 더이상 이전 라운드의 데이터가 새로운 라운드에 영향을 미치지 않습니다. 계속할까요?", "Swiss Tournament System", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var max_round = Manager.GetMaxRound();
+                var target_round = max_round + 1;
 
                 var nt = new TabPage();
                 nt.Location = new Point(4, 24);
@@ -182,15 +193,50 @@ namespace Swiss_Tournament
                 tabControl2.TabPages.Add(nt);
 
                 // 이전 라운드 결과로부터 새로운 라운드 생성
+                var tie_info = GetTieTableInfo(max_round);
+                // 부전승 시킬놈 선정
+                if (tie_info.Count % 2 == 1)
+                {
+                    var bjs = tie_info[tie_info.Count / 2];
+                    Manager.InsertHistory(bjs.Id, -1, Status.ByeWin, target_round, "");
+                }
+                for (int i = 0; i < tie_info.Count / 2; i++)
+                {
+                    Manager.InsertHistory(tie_info[i].Id, tie_info[tie_info.Count - i - 1].Id, Status.None, target_round, "");
+                }
 
-
-                RoundControl control = new RoundControl(max_round)
+                RoundControl control = new RoundControl(target_round)
                 {
                     Dock = DockStyle.Fill
                 };
                 nt.Controls.Add(control);
                 rounds.Add(tabControl2.TabPages.Count - 1, control);
             }
+        }
+
+        private List<Member> GetTieTableInfo(int round)
+        {
+            var list = Manager.QueryMember("");
+            var list2 = Manager.QueryHistory("round=" + round);
+            var str = new SwissTournamentRound();
+
+            foreach (Member member in list)
+                str.InsertPlayer(member.Id);
+            foreach (History history in list2)
+                str.InsertRoundResult(history.Player1, history.Player2, history.Status, round);
+            str.Sort();
+
+            var result = new List<Member>();
+            var ppindex = new Dictionary<int, Member>();
+            list.ForEach(x => ppindex.Add(x.Id, x));
+            str.rank.ForEach(pp => result.Add(ppindex[pp.Key]));
+            return result;
+        }
+
+        private void _debug_delete_history(int round)
+        {
+            var list = Manager.QueryHistory("round=" + round);
+            list.ForEach(h => Manager.RemoveHistory(h.Index));
         }
     }
 }
